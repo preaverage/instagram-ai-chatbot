@@ -1,21 +1,21 @@
+import { Thread } from "../../types";
 import { IgApiClientRealtime, MessageSyncMessageWrapper } from "instagram_mqtt";
-
-import config from "../../config.json";
 
 interface HandleLatestMessageProps {
   client: IgApiClientRealtime;
   message: MessageSyncMessageWrapper;
-  collectedThreads: { id: string; messages: string[] }[];
+  collectedThreads: Thread[];
+  threads: string[];
 }
 
 const handleLatestMessage = async ({
   client,
   message,
   collectedThreads,
+  threads,
 }: HandleLatestMessageProps) => {
-  if (config.threads) {
-    const isWhiteListed = config.threads.find((thread) => thread === message.message.thread_id);
-
+  if (threads) {
+    const isWhiteListed = threads.find(thread => thread === message.message.thread_id);
     if (!isWhiteListed) return null;
   }
 
@@ -30,9 +30,8 @@ const handleLatestMessage = async ({
     return null;
   }
 
-  const { username: fromuser } = await client.user.info(
-    message.message.user_id.toString()
-  );
+  const { username: fromuser } =
+    await client.user.info(message.message.user_id.toString());
   if (fromuser == process.env.IG_username) return null;
 
   const messageText = `From ${fromuser}: ${message.message.text}`;

@@ -1,0 +1,1 @@
+export type Thread = { id: string; messages: string[] };

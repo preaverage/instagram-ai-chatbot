@@ -8,7 +8,6 @@ interface SendMessageProps {
 
 const sendMessage = async ({ client, thread, message }: SendMessageProps) => {
   const group = client.entity.directThread(thread);
-
   await group.broadcastText(message).then(() => {});
 };
 

@@ -1,15 +1,16 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-interface getResponseProps {
+type getResponseProps = {
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+  model: OpenAI.Chat.ChatModel;
 }
 
-const getResponse = async ({ messages }: getResponseProps) => {
+const getResponse = async ({ messages, model }: getResponseProps) => {
   const response = await openai.chat.completions.create({
     messages: messages,
-    model: "gpt-3.5-turbo",
+    model: model,
   });
 
   return response.choices[0].message.content;

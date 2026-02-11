@@ -1,7 +1,8 @@
-import clientHandle from "./clientHandle";
+import sleep from "./sleep";
 import saveData from "./saveData";
 import loadData from "./loadData";
+import getConfig from "./config";
+import clientHandle from "./clientHandle";
 import intervalChecks from "./intervalChecks";
-import sleep from "./sleep";
 
-export { clientHandle, saveData, loadData, intervalChecks, sleep };
+export { sleep, saveData, loadData, getConfig, clientHandle, intervalChecks };

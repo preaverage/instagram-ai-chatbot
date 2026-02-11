@@ -1,15 +1,15 @@
 import "dotenv/config";
 import * as fs from "fs";
 
+import { Thread } from "./types";
+import { clientHandle, getConfig, intervalChecks, sleep } from "./util";
 import { login, getAndSend, handleLatestMessage } from "./api/instagram";
-
-import config from "./config.json";
-
-import { clientHandle, intervalChecks, sleep } from "./util";
 
 const client = clientHandle(() => login({ client }));
 
 const main = async () => {
+  const config = getConfig();
+
   intervalChecks({ prompt: config.prompt });
 
   let isLogin: string;
@@ -29,17 +29,16 @@ const main = async () => {
 
   console.log(`Watching for messages. (${config.waitTime} seconds)`);
 
-  let collectedThreads: { id: string; messages: string[] }[] = [];
+  let collectedThreads: Thread[] = [];
   client.realtime.on("message", async (message) => {
     const newThreads = await handleLatestMessage({
       client,
       message,
       collectedThreads,
+      threads: config.threads,
     });
 
-    if (newThreads) {
-      collectedThreads = newThreads;
-    }
+    if (newThreads) collectedThreads = newThreads;
   });
 
   await client.realtime.connect({
@@ -47,21 +46,21 @@ const main = async () => {
   });
 
   while (true) {
-    if (collectedThreads.length > 0) {
-      collectedThreads.forEach(async (thread) => {
-        collectedThreads = collectedThreads.filter(
-          (item) => item.id !== thread.id
-        );
+    if (collectedThreads.length <= 0) continue;
 
-        await getAndSend({
-          client,
-          thread: thread.id,
-          allMessages: thread.messages,
-        });
+    for (const thread of collectedThreads) {
+      collectedThreads =
+        collectedThreads.filter(item => item.id !== thread.id);
 
-        console.log(`\nWatching for messages. (${config.waitTime} seconds)`);
+      await getAndSend({
+        client,
+        thread: thread.id,
+        allMessages: thread.messages,
+        model: config.model,
       });
-    }
+
+      console.log(`\nWatching for messages. (${config.waitTime} seconds)`);
+    };
 
     await sleep({ seconds: config.waitTime });
   }

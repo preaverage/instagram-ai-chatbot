@@ -22,7 +22,6 @@ const clientHandle = (callback: () => void) => {
   client.request.error$.subscribe(async (error) => {
     if (error.name == "IgCheckpointError") {
       console.log("Challange required, quitting.");
-
       return process.exit();
     }
 

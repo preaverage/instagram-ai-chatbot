@@ -19,7 +19,7 @@ npm install
 ```env
 IG_USERNAME=john
 IG_PASSWORD=appleseed
-OPENAI_KEY=OPENAI_API_KEY
+OPENAI_API_KEY=OPENAI_API_KEY
 ```
 
 2. Create a `config.json`.
